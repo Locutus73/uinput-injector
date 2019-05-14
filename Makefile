@@ -6,5 +6,6 @@ CFLAGS := -std=c11 -g \
 uinput-inject: uinput-inject.o uinput-key.o
 clean:
 	$(RM) uinput-inject
+	$(RM) *.o
 
 .PHONY: clean
