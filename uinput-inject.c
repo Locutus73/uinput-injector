@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <err.h>
@@ -120,7 +121,8 @@ int main(int argc, char *argv[])
     check_posix(ioctl(fd, UI_SET_EVBIT, EV_KEY), "failed to set EV_KEY");
     check_posix(ioctl(fd, UI_SET_KEYBIT, KEY_LEFTSHIFT), "failed to set UI_SET_KEYBIT");
 
-    for (int key = KEY_1; key <= KEY_SPACE; ++key) {
+//    for (int key = KEY_1; key <= KEY_SPACE; ++key) {
+    for (int key = KEY_ESC; key <= KEY_COMPOSE; ++key) {
         check_posix(ioctl(fd, UI_SET_KEYBIT, key & KEYMASK),
                     "failed to set UI_SET_KEYBIT");
     }
@@ -139,7 +141,17 @@ int main(int argc, char *argv[])
                 "failed to create uinput device");
 
     usleep(500000);
-    ev_inject_keypresses(fd, argv[1]);
+	if (strcmp(argv[1],"--keycode")==0) {
+		int key = keycode_to_key(atoi(argv[2]));
+		if ((argv[3])&&((key == KEY_LEFTSHIFT)||(key == KEY_LEFTALT)||(key == KEY_LEFTCTRL))) {
+			ev_key(fd, key, 1);
+			key = keycode_to_key(atoi(argv[3]));
+		};
+		ev_key_click(fd, key);
+		//if ((key == KEY_ENTER)) usleep(500000);
+	}
+	else
+		ev_inject_keypresses(fd, argv[1]);
 
     ioctl(fd, UI_DEV_DESTROY);
     close(fd);
