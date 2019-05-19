@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 	check_posix(ioctl(fd, UI_DEV_CREATE),
 				"failed to create uinput device");
 	
-	const sleepms = 50;
+	const int sleepms = 50;
 	usleep(sleepms*1000);
 	
 	if (strcmp(argv[1],"--keycode")==0) {
